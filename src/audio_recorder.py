@@ -29,6 +29,9 @@ def cleanup_sounddevice():
 
 atexit.register(cleanup_sounddevice)
 
+class AudioRecorderError(Exception):
+    """Custom exception for AudioRecorder errors."""
+    pass
 
 class AudioRecorder:
     def __init__(self, sample_rate: int = 44100, channels: int = 1):
