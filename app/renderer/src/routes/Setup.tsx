@@ -133,6 +133,8 @@ export function Setup() {
     });
   }, []);
 
+  console.log('Rendering Setup component');
+
   const checkMic = useCheckMicPermission();
   const requestMic = useRequestMicPermission();
   const whisperStep = useSetupStep('whisper');
@@ -156,6 +158,8 @@ export function Setup() {
   // could be stale or empty, and we don't want to seed from it and then ignore
   // the canonical value when it arrives from disk.
   const seededRef = React.useRef(false);
+  const userNameReady = !userName.isPending && !userName.isPlaceholderData;
+  
   React.useEffect(() => {
     if (seededRef.current) return;
     if (userName.isPending || userName.isPlaceholderData) return;
