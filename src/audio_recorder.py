@@ -65,6 +65,12 @@ class AudioRecorder:
     def _clear_state(self):
         """No persistence - do nothing.""" 
         pass
+    def reset(self):
+        """Reset the recorder to initial state."""
+        self.stop_recording()
+        with self.audio_lock:
+            self.audio_data = []
+        logger.info("AudioRecorder reset to initial state")
         
     def start_recording(self) -> None:
         """Start recording audio from the microphone."""
