@@ -619,7 +619,9 @@ class Config:
         self._config[key] = value
         return self._save()
 
-
+class ConfigError(Exception):
+    """Custom exception for configuration-related errors."""
+    pass
 # Global config instance
 _config_instance: Optional[Config] = None
 

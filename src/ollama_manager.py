@@ -13,6 +13,8 @@ import time
 from pathlib import Path
 from typing import Optional, Tuple
 
+from sympy import re
+
 logger = logging.getLogger(__name__)
 
 # Ollama download URL for macOS
@@ -46,7 +48,14 @@ def get_bundled_ollama_dir() -> Optional[Path]:
         return dev_ollama_dir
 
     return None
+def is_ollama_bundled() -> bool:
+    """
+    Check if Ollama is bundled with the app.
 
+    Returns:
+        True if bundled Ollama is available, False otherwise
+    """
+    return get_bundled_ollama_dir() is not None
 
 def get_ollama_binary() -> Optional[Path]:
     """
@@ -343,3 +352,63 @@ def has_model(model_name: str) -> bool:
     """
     models = list_models()
     return model_name in models
+def _resolve_ffmpeg() -> Optional[str]:
+    global _FFMPEG_PATH_CACHE
+    if _FFMPEG_PATH_CACHE is not None:
+        return _FFMPEG_PATH_CACHE
+    with _FFMPEG_PATH_LOCK:
+        if _FFMPEG_PATH_CACHE is not None:
+            return _FFMPEG_PATH_CACHE
+        candidates: list[str] = []
+        if getattr(sys, 'frozen', False):
+            exe_dir = Path(sys.executable).parent
+            candidates.extend([
+                str(exe_dir / 'ffmpeg'),
+                str(exe_dir / '_internal' / 'ffmpeg'),
+            ])
+        candidates.extend([
+            'ffmpeg',
+            '/opt/homebrew/bin/ffmpeg',
+            '/usr/local/bin/ffmpeg',
+            '/usr/bin/ffmpeg',
+        ])
+        for cand in candidates:
+            try:
+                r = subprocess.run([cand, '-version'], capture_output=True, timeout=5)
+                if r.returncode == 0:
+                    _FFMPEG_PATH_CACHE = cand
+                    logger.info(f"ffmpeg resolved at: {cand}")
+                    return cand
+            except (FileNotFoundError, subprocess.TimeoutExpired):
+                continue
+        logger.warning("ffmpeg not found in any candidate location")
+        return None
+
+
+def _parse_channels_from_ffmpeg_stderr(stderr: str) -> Optional[int]:
+    """Parse "Audio: ..., stereo|mono|N channels" from ffmpeg's `-i` output."""
+    m = re.search(r'Audio: [^\n]*?(stereo|mono|(\d+) channels)', stderr)
+    if not m:
+        return None
+    token = m.group(1)
+    if token == 'stereo':
+        return 2
+    if token == 'mono':
+        return 1
+    return int(m.group(2))
+
+
+def _parse_duration_from_ffmpeg_stderr(stderr: str) -> Optional[float]:
+    """Parse "Duration: HH:MM:SS.mmm" from ffmpeg's `-i` output."""
+    m = re.search(r'Duration:\s*(\d+):(\d+):(\d+(?:\.\d+)?)', stderr)
+    if not m:
+        return None
+    return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
+
+
+try:
+    import numpy as _np
+    _NUMPY_AVAILABLE = True
+except ImportError:
+    _np = None
+    _NUMPY_AVAILABLE = False

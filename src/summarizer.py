@@ -96,7 +96,10 @@ class OllamaSummarizer:
 
             self.client = ollama.Client(host=self.remote_url)
             logger.info(f"Remote Ollama initialized: host={self.remote_url}, model={self.model_name}")
-
+        elif self.ai_provider == "local":
+            # Local mode: use the local Ollama instance
+            if not OLLAMA_AVAILABLE:
+                raise ImportError("Ollama is not installed. Please install ollama-python.")
         else:
             # Local mode: existing behavior
             if not OLLAMA_AVAILABLE:
