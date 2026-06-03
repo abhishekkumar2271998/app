@@ -159,7 +159,7 @@ export function Setup() {
   // the canonical value when it arrives from disk.
   const seededRef = React.useRef(false);
   const userNameReady = !userName.isPending && !userName.isPlaceholderData;
-  
+
   React.useEffect(() => {
     if (seededRef.current) return;
     if (userName.isPending || userName.isPlaceholderData) return;
@@ -265,6 +265,35 @@ export function Setup() {
     }
   };
 
+  const steps: Step[] = [
+    {
+      id: 'microphone',
+      title: 'Microphone Access',
+      description: 'Required for recording meetings',
+      icon: Mic,
+      status: statuses.microphone,
+      detail: details.microphone,
+    },
+    {
+      id: 'whisper',
+      title: 'Transcription Engine',
+      description: 'Converts speech to text locally',
+      icon: MessageSquare,
+      status: statuses.whisper,
+      detail: details.whisper,
+    },
+    {
+      id: 'ollama',
+      title: 'Summarization Engine',
+      description:
+        summaryMode === 'cloud'
+          ? 'Cloud API — fast, no download'
+          : 'Local model (~2 GB) — private, runs on your Mac',
+      icon: summaryMode === 'cloud' ? Cloud : Zap,
+      status: statuses.ollama,
+      detail: details.ollama,
+    },
+  ];
   const steps: Step[] = [
     {
       id: 'microphone',
