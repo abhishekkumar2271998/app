@@ -84,6 +84,27 @@ function StepCard({ step }: { step: Step }) {
     </div>
   );
 }
+function StepCard({ step }: { step: Step }) {
+  const Icon = step.icon;
+  return (
+    <div
+      className="flex items-center gap-4 rounded-md border border-border p-4"
+      data-setup-step={step.id}
+      data-setup-status={step.status}
+    >
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+        {step.status === 'done' ? <Check className="size-5" /> : step.status === 'failed' ? <X className="size-5" /> : <Icon className="size-5" />}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium text-foreground">{step.title}</div>
+          <Badge status={step.status} />
+        </div>
+        <Muted className="mt-0.5">{step.detail ?? step.description}</Muted>
+      </div>
+    </div>
+  );
+}
 
 export function Setup() {
   const navigate = useNavigate();
