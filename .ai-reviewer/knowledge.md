@@ -1,20 +1,20 @@
 # stenoai reviewer notes
 
 ## Architecture
-The `stenoai` codebase consists of a hybrid architecture that combines a Python backend with an Electron-based frontend, utilizing React and Vite for the UI. The project is organized into two main directories: `src/` for backend logic and `app/` for the Electron application, with the renderer components kept in `app/renderer/`. This modular structure facilitates a clear separation between the business logic and user interface layers.
+The `stenoai` repository is an Electron-based application that provides an AI-powered intelligence layer for recording, transcribing, and summarizing conversations. The codebase is structured into two main folders: `app`, which contains the Electron desktop application and frontend (using React and Vite), and `src`, which hosts the Python backend responsible for audio processing and AI integrations.
 
 ## Conventions
-- **Code Style**: For Python, the team adheres to [PEP 8](https://pep8.org/) guidelines, and for JavaScript/TypeScript, they use ES6 style with tools such as `eslint` and `prettier`. For example, seen in the `app/package.json`, scripts include `lint:renderer` to enforce code quality through linting.
-- **Type Safety**: TypeScript is utilized throughout the frontend, ensuring strict type checking as specified in `app/renderer/tsconfig.json`.
-- **Component Patterns**: The React components in `app/renderer/src` use functional components and hooks extensively, such as `useRecording` and `useSystemAudioCapture` to manage state and side effects.
-- **Folder Structure**: The project follows a semantic naming convention, with clear delineation for main application components, routes, and utility functions found under distinct folders like `routes`, `components`, and `lib`.
+- **File Naming**: File names use lowercase_with_underscores for Python files (e.g., `audio_recorder.py`, `transcriber.py`) and PascalCase for React components (e.g., `Home.tsx`, `Settings.tsx`).
+- **Python Code Style**: The Python backend follows PEP 8 guidelines, including the use of type hints and docstrings. The linter `ruff` is required for code quality checks.
+- **JavaScript/TypeScript Code Style**: The frontend adheres to JavaScript's standard conventions, including the use of semicolons and `const`/`let` for variable declarations. Consistent use of hooks (e.g., `useEffect`, `useLayoutEffect`) is observed for managing component lifecycles in React.
+- **Project Structure**: The main project directory contains two primary components: the `app` folder (for front-end and Electron-specific code) and the `src` folder (for the Python backend). The `package.json` in the `app` directory defines npm scripts for managing both frontend and package-related tasks.
 
 ## Intentional non-standard choices
-- **Electron App Structure**: The main logic for the Electron app is separated into `main.js` and `preload.js`, with context bridging outlined clearly. The preload script intentionally restricts renderer access to only necessary APIs to ensure security. This may be flagged by bots as overly complex but is essential for maintaining a clean architectural separation.
-- **Custom Protocol**: A custom protocol (`stenoai://`) is registered for capturing actions, which might look non-standard in some Electron applications. This is intended for operational simplicity and direct access by users or third-party applications.
+- **Node.js and Python Integration**: The choice of Python for backend processing and JavaScript for the frontend may appear as a separation of concerns. However, this hybrid architecture aims to leverage the strengths of both ecosystems effectively.
+- **Global State Management with Custom Hooks**: A non-standard choice is the use of custom React hooks (like `useRecording`) for state management within the application, which provides a clear API to interact with shared functionalities.
 
 ## Watch out for
-- **Dependency Management**: In `app/package.json`, ensure that the correct versions for dependencies are maintained, especially as false upgrades could break compatibility with the Python backend.
-- **Type Safety**: Ensure no parts of the codebase introduce TypeScript errors or warnings. Check for any `any` types in `app/renderer/src` that could undermine the type safety provided by TypeScript.
-- **Error Handling**: Review how errors are logged, especially in crucial areas such as the audio capturing and processing loops in `main.js`. Lack of robust error catching could lead to unresponsive application states.
-- **Testing Robustness**: Ensure that end-to-end tests in folders containing test configurations, such as `e2e`, are comprehensive, particularly for user-triggered actions like starting and stopping recordings, as they are critical to functionality. The presence of `test:e2e` scripts suggests a focus on testing but warrants confirmation of coverage depth.
+- **Error Handling**: Watch for inadequate error handling in asynchronous operations, especially when dealing with IPC (interprocess communication) between the renderer and main processes (`ipcRenderer.invoke` and `.send` methods in `preload.js`).
+- **Dependency Management**: Ensure that all dependencies are correctly listed in `package.json` and that the Python environment is set up properly with required packages in `requirements.txt`. Missing dependencies can lead to runtime errors.
+- **Sensitive Information**: Check for the presence of sensitive information in `.env` or code files and ensure that they are excluded from version control. The `.env` should not include sensitive API keys directly in code files.
+- **Environment-Specific Code**: Be cautious when checking code that uses environment variables (like `process.env.STENOAI_E2E`) and ensure that there is clear documentation on the setup for E2E testing in `README.md` and `CONTRIBUTING.md`.
