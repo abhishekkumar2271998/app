@@ -1,14 +1,18 @@
+import * as React from 'react';
 import { Folder as FolderIcon, Loader2 } from 'lucide-react';
 import type { Meeting } from '@/lib/ipc';
 import { navigate } from '@/lib/router';
 import { useMeetingsList } from '@/lib/meetingsListContext';
+import { useTilt } from '@/hooks/useTilt';
 
 interface PreviousRowProps {
   meeting: Meeting;
   folderName?: string;
+  /** Position in the list, used to stagger the 3D entrance. */
+  index?: number;
 }
 
-export function PreviousRow({ meeting, folderName }: PreviousRowProps) {
+export function PreviousRow({ meeting, folderName, index = 0 }: PreviousRowProps) {
   const info = meeting.session_info;
   const when = formatTime(info.processed_at ?? info.updated_at);
   const duration = formatDuration(info.duration_seconds);
@@ -17,6 +21,7 @@ export function PreviousRow({ meeting, folderName }: PreviousRowProps) {
     ? meeting.participants.length
     : 0;
   const list = useMeetingsList();
+  const tilt = useTilt<HTMLDivElement>(5);
   const isLive = meeting.is_recording;
   const isProcessing = meeting.is_processing;
   const isSynthetic = isLive || isProcessing;
@@ -30,8 +35,12 @@ export function PreviousRow({ meeting, folderName }: PreviousRowProps) {
       : `/meetings/${encodeURIComponent(info.summary_file)}`;
 
   return (
+    <div className="box-3d-enter" style={{ '--stagger-index': index } as React.CSSProperties}>
     <div
-      className="previous-row"
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      className="previous-row tilt-3d"
       data-testid="previous-row"
       data-recording={isLive ? 'true' : undefined}
       data-processing={isProcessing ? 'true' : undefined}
@@ -108,6 +117,7 @@ export function PreviousRow({ meeting, folderName }: PreviousRowProps) {
       >
         {duration && <span>{duration}</span>}
       </div>
+    </div>
     </div>
   );
 }

@@ -4,16 +4,20 @@ import type { CalendarEvent } from '@/lib/ipc';
 import { ipc } from '@/lib/ipc';
 import { cn } from '@/lib/utils';
 import { useRecording } from '@/hooks/useRecording';
+import { useTilt } from '@/hooks/useTilt';
 
 interface UpcomingCardProps {
   event: CalendarEvent;
+  /** Position in the list, used to stagger the 3D entrance. */
+  index?: number;
 }
 
-export function UpcomingCard({ event }: UpcomingCardProps) {
+export function UpcomingCard({ event, index = 0 }: UpcomingCardProps) {
   const relative = relativeLabel(event.start);
   const { dayLabel, clock, end } = formatStartEnd(event.start, event.end);
   const meetingUrl = event.meeting_url?.trim();
   const recording = useRecording();
+  const tilt = useTilt<HTMLDivElement>();
 
   // Click the card → start a new recording titled after this event. The
   // event title becomes the note's session name (instead of the auto
@@ -41,8 +45,12 @@ export function UpcomingCard({ event }: UpcomingCardProps) {
   };
 
   return (
+    <div className="box-3d-enter" style={{ '--stagger-index': index } as React.CSSProperties}>
     <div
-      className={cn('upcoming-card', relative.urgent && 'upcoming-card-live')}
+      ref={tilt.ref}
+      onMouseMove={tilt.onMouseMove}
+      onMouseLeave={tilt.onMouseLeave}
+      className={cn('upcoming-card tilt-3d', relative.urgent && 'upcoming-card-live')}
       role="button"
       tabIndex={0}
       onClick={onStart}
@@ -141,6 +149,7 @@ export function UpcomingCard({ event }: UpcomingCardProps) {
           )
         ) : null}
       </div>
+    </div>
     </div>
   );
 }

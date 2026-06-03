@@ -170,9 +170,9 @@ export function Home({ mode }: HomeProps) {
                   </button>
                 }
               />
-              <div className="flex flex-col gap-2">
-                {upcoming.map((event) => (
-                  <UpcomingCard key={event.id} event={event} />
+              <div className="flex flex-col gap-2" style={{ perspective: '1200px' }}>
+                {upcoming.map((event, i) => (
+                  <UpcomingCard key={event.id} event={event} index={i} />
                 ))}
               </div>
             </section>
@@ -237,12 +237,13 @@ export function Home({ mode }: HomeProps) {
                   >
                     {g.label}
                   </div>
-                  <div>
-                    {g.items.map((m) => (
+                  <div style={{ perspective: '1200px' }}>
+                    {g.items.map((m, i) => (
                       <PreviousRow
                         key={m.session_info.summary_file}
                         meeting={m}
                         folderName={firstFolderName(m, folderName)}
+                        index={i}
                       />
                     ))}
                   </div>

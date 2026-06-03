@@ -249,6 +249,20 @@
   from { opacity: 0; transform: translateY(-5px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* Dashboard boxes — 3D entrance. Cards rise out of the page along Z with a
+   slight backward tilt that settles flat. Lives on a wrapper element so it
+   never fights the interactive pointer-tilt transform (which lives on the
+   inner .tilt-3d). Per-item --stagger-index cascades the group in. */
+@keyframes riseIn3d {
+  from {
+    opacity: 0;
+    transform: perspective(900px) translateZ(-60px) translateY(18px) rotateX(10deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(900px) translateZ(0) translateY(0) rotateX(0);
+  }
+}
 
 /* =============================================================================
    Component layer
@@ -258,6 +272,64 @@
 @layer components {
   .animate-title-in {
     animation: titleFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ==========================================================================
+     3D dashboard boxes — staggered entrance + interactive pointer tilt
+     The wrapper owns the entrance animation and the perspective; the inner
+     .tilt-3d owns the live pointer-driven rotation (vars set in useTilt).
+     Splitting them keeps the two transforms from clobbering each other.
+     ========================================================================== */
+  .box-3d-enter {
+    animation: riseIn3d var(--dur-slow) cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(min(var(--stagger-index, 0), 8) * 60ms);
+    transform-style: preserve-3d;
+  }
+
+  .tilt-3d {
+    --rx: 0deg;
+    --ry: 0deg;
+    --tilt-scale: 1;
+    position: relative;
+    transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry)) scale(var(--tilt-scale));
+    transform-style: preserve-3d;
+    transition: transform var(--dur-fast) var(--ease), box-shadow var(--dur) var(--ease);
+    will-change: transform;
+  }
+  /* Lift + deepen shadow on hover. The pointer tilt rides on top via --rx/--ry. */
+  .tilt-3d:hover {
+    --tilt-scale: 1.03;
+    box-shadow: var(--shadow-lg);
+    z-index: 1;
+  }
+  .tilt-3d:active {
+    --tilt-scale: 1.01;
+    transition-duration: var(--dur-fast);
+  }
+  /* Specular sheen that tracks the pointer (--mx/--my, 0–100%), giving the
+     surface a sense of depth as it tilts. Pure ink — a faint white wash. */
+  .tilt-3d::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.18),
+      rgba(255, 255, 255, 0) 55%
+    );
+    transition: opacity var(--dur) var(--ease);
+  }
+  .tilt-3d:hover::after { opacity: 1; }
+  .dark .tilt-3d::after,
+  [data-theme="dark"] .tilt-3d::after {
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 255, 255, 0.08),
+      rgba(255, 255, 255, 0) 55%
+    );
   }
 
   .thinking-dot {
@@ -722,4 +794,28 @@
     border-top: 1px solid var(--border-subtle);
     margin: 1em 0;
   }
+}
+
+/* =============================================================================
+   Accessibility — honor reduced-motion preferences
+   Drop the 3D entrance and the pointer tilt entirely (the useTilt hook also
+   no-ops, but this is the CSS backstop). Keep cards visible and flat; only
+   the lift/shadow on hover remains as a static state cue.
+   =============================================================================*/
+
+@media (prefers-reduced-motion: reduce) {
+  .box-3d-enter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  .tilt-3d {
+    transform: none;
+    will-change: auto;
+  }
+  .tilt-3d:hover,
+  .tilt-3d:active {
+    --tilt-scale: 1;
+  }
+  .tilt-3d::after { display: none; }
 }
