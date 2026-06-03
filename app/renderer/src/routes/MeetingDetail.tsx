@@ -107,6 +107,190 @@ export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
     </MeetingsShell>
   );
 }
+export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
+  const meeting = useMeeting(summaryFile);
+  useActiveMeeting(summaryFile, meeting.data?.session_info.name ?? null);
+
+  React.useEffect(() => {
+    if (meeting.data) {
+      localStorage.setItem(LAST_OPENED_KEY, summaryFile);
+    }
+  }, [meeting.data, summaryFile]);
+
+  return (
+    <MeetingsShell activeSummaryFile={summaryFile}>
+      {meeting.isLoading || (meeting.isFetching && !meeting.data) ? (
+        <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
+          Loading meeting…
+        </div>
+      ) : !meeting.data ? (
+        <div className="space-y-4 text-center">
+          <h1 className="mv-title">Note not found.</h1>
+          <p className="text-[17px] leading-[1.55]" style={{ color: 'var(--fg-2)' }}>
+            This recording may have been deleted. Pick another from the sidebar.
+          </p>
+          <button
+            type="button"
+            className="mv-chip"
+            onClick={() => navigate('/meetings')}
+          >
+            Back to meetings
+          </button>
+        </div>
+      ) : (
+        <DetailContent key={summaryFile} meeting={meeting.data} />
+      )}
+    </MeetingsShell>
+  );
+}
+
+export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
+  const meeting = useMeeting(summaryFile);
+  useActiveMeeting(summaryFile, meeting.data?.session_info.name ?? null);
+
+  React.useEffect(() => {
+    if (meeting.data) {
+      localStorage.setItem(LAST_OPENED_KEY, summaryFile);
+    }
+  }, [meeting.data, summaryFile]);
+
+  return (
+    <MeetingsShell activeSummaryFile={summaryFile}>
+      {meeting.isLoading || (meeting.isFetching && !meeting.data) ? (
+        <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
+          Loading meeting…
+        </div>
+      ) : !meeting.data ? (
+        <div className="space-y-4 text-center">
+          <h1 className="mv-title">Note not found.</h1>
+          <p className="text-[17px] leading-[1.55]" style={{ color: 'var(--fg-2)' }}>
+            This recording may have been deleted. Pick another from the sidebar.
+          </p>
+          <button
+            type="button"
+            className="mv-chip"
+            onClick={() => navigate('/meetings')}
+          >
+            Back to meetings
+          </button>
+        </div>
+      ) : (
+        <DetailContent key={summaryFile} meeting={meeting.data} />
+      )}
+    </MeetingsShell>
+  );
+}
+
+export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
+  const meeting = useMeeting(summaryFile);
+  useActiveMeeting(summaryFile, meeting.data?.session_info.name ?? null);
+
+  React.useEffect(() => {
+    if (meeting.data) {
+      localStorage.setItem(LAST_OPENED_KEY, summaryFile);
+    }
+  }, [meeting.data, summaryFile]);
+
+  return (
+    <MeetingsShell activeSummaryFile={summaryFile}>
+      {meeting.isLoading || (meeting.isFetching && !meeting.data) ? (
+        <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
+          Loading meeting…
+        </div>
+      ) : !meeting.data ? (
+        <div className="space-y-4 text-center">
+          <h1 className="mv-title">Note not found.</h1>
+          <p className="text-[17px] leading-[1.55]" style={{ color: 'var(--fg-2)' }}>
+            This recording may have been deleted. Pick another from the sidebar.
+          </p>
+          <button
+            type="button"
+            className="mv-chip"
+            onClick={() => navigate('/meetings')}
+          >
+            Back to meetings
+          </button>
+        </div>
+      ) : (
+        <DetailContent key={summaryFile} meeting={meeting.data} />
+      )}
+    </MeetingsShell>
+  );
+}
+
+export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
+  const meeting = useMeeting(summaryFile);
+  useActiveMeeting(summaryFile, meeting.data?.session_info.name ?? null);
+
+  React.useEffect(() => {
+    if (meeting.data) {
+      localStorage.setItem(LAST_OPENED_KEY, summaryFile);
+    }
+  }, [meeting.data, summaryFile]);
+
+  return (
+    <MeetingsShell activeSummaryFile={summaryFile}>
+      {meeting.isLoading || (meeting.isFetching && !meeting.data) ? (
+        <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
+          Loading meeting…
+        </div>
+      ) : !meeting.data ? (
+        <div className="space-y-4 text-center">
+          <h1 className="mv-title">Note not found.</h1>
+          <p className="text-[17px] leading-[1.55]" style={{ color: 'var(--fg-2)' }}>
+            This recording may have been deleted. Pick another from the sidebar.
+          </p>
+          <button
+            type="button"
+            className="mv-chip"
+            onClick={() => navigate('/meetings')}
+          >
+            Back to meetings
+          </button>
+        </div>
+      ) : (
+        <DetailContent key={summaryFile} meeting={meeting.data} />
+      )}
+    </MeetingsShell>
+  );
+}
+
+export function MeetingDetail({ summaryFile }: MeetingDetailProps) {
+  const meeting = useMeeting(summaryFile);
+  useActiveMeeting(summaryFile, meeting.data?.session_info.name ?? null);
+
+  React.useEffect(() => {
+    if (meeting.data) {
+      localStorage.setItem(LAST_OPENED_KEY, summaryFile);
+    }
+  }, [meeting.data, summaryFile]);
+
+  return (
+    <MeetingsShell activeSummaryFile={summaryFile}>
+      {meeting.isLoading || (meeting.isFetching && !meeting.data) ? (
+        <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
+          Loading meeting…
+        </div>
+      ) : !meeting.data ? (
+        <div className="space-y-4 text-center">
+          <h1 className="mv-title">Note not found.</h1>
+          <p className="text-[17px] leading-[1.55]" style={{ color: 'var(--fg-2)' }}>
+            This recording may have been deleted. Pick another from the sidebar.
+          </p>
+          <button
+            type="button"
+            className="mv-chip"
+            onClick={() => navigate('/meetings')}
+          >
+            Back to meetings
+          </button>
+        </div>
+      ) : (
+        <DetailContent key={summaryFile} meeting={meeting.data} />
+      )}
+    </MeetingsShell>
+  );
+}
 
 function DetailContent({ meeting }: { meeting: Meeting }) {
   const info = meeting.session_info;
