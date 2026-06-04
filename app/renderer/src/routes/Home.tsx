@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { PencilLine, RefreshCw, Search, Square, X } from 'lucide-react';
+import {
+  FileText,
+  Mic,
+  PencilLine,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Square,
+  X,
+} from 'lucide-react';
 import { MeetingsShell } from '@/components/MeetingsShell';
 import { UpcomingCard } from '@/components/home/UpcomingCard';
 import { PreviousRow } from '@/components/home/PreviousRow';
@@ -76,7 +86,22 @@ export function Home({ mode }: HomeProps) {
       activeSummaryFile={null}
       contentAlign={emptyState && mode === 'home' ? 'center' : 'top'}
     >
-      {meetings.isLoading ? (
+      {/* Dashboard renders as a self-contained dark panel regardless of the
+          app theme. The `dark` class re-binds the design tokens (--page,
+          --fg-1, --surface-*, …) on this subtree, so descendants inherit the
+          dark palette without affecting the sidebar or the rest of the app. */}
+      <div
+        className="dark"
+        style={{
+          background: 'var(--page)',
+          color: 'var(--fg-1)',
+          borderRadius: 'var(--radius-xl)',
+          padding: '28px 32px',
+          minHeight: '100%',
+          boxShadow: 'var(--shadow-md)',
+        }}
+      >
+        {meetings.isLoading ? (
         <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
           Loading meetings…
         </div>
@@ -178,6 +203,89 @@ export function Home({ mode }: HomeProps) {
             </section>
           )}
 
+          {mode === 'home' && (
+            <section className="mb-10">
+              <SectionHead title="How it works" count={STEPS.length} />
+              <p
+                className="mb-5 max-w-[60ch] text-sm leading-[1.55]"
+                style={{ color: 'var(--fg-2)' }}
+              >
+                StenoAI captures meetings and turns them into clean,
+                searchable notes — entirely on your machine. Recording,
+                transcription, and summarization all run locally, so your
+                conversations never leave your device.
+              </p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {STEPS.map((step, i) => (
+                  <div
+                    key={step.title}
+                    className="flex flex-col gap-2.5 rounded-[14px] p-4"
+                    style={{
+                      background: 'var(--surface-raised)',
+                      border: '1px solid var(--border-subtle)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="inline-flex size-7 items-center justify-center rounded-full"
+                        style={{
+                          background: 'var(--surface-active)',
+                          color: 'var(--fg-1)',
+                        }}
+                      >
+                        <step.icon className="size-[15px]" />
+                      </span>
+                      <span
+                        className="text-[11px] font-medium tabular-nums"
+                        style={{ color: 'var(--fg-muted)' }}
+                      >
+                        Step {i + 1}
+                      </span>
+                    </div>
+                    <div>
+                      <div
+                        className="text-sm font-medium"
+                        style={{ color: 'var(--fg-1)' }}
+                      >
+                        {step.title}
+                      </div>
+                      <p
+                        className="mt-1 text-[13px] leading-[1.5]"
+                        style={{ color: 'var(--fg-2)' }}
+                      >
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div
+                className="mt-4 flex items-start gap-2.5 rounded-[14px] p-4"
+                style={{
+                  background: 'var(--surface-raised)',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <ShieldCheck
+                  className="mt-0.5 size-4 shrink-0"
+                  style={{ color: 'var(--fg-2)' }}
+                />
+                <p
+                  className="max-w-[60ch] text-[13px] leading-[1.5]"
+                  style={{ color: 'var(--fg-2)' }}
+                >
+                  <span style={{ color: 'var(--fg-1)', fontWeight: 500 }}>
+                    Why local?
+                  </span>{' '}
+                  Meeting notes contain sensitive conversations. Keeping the
+                  full pipeline on-device means no transcripts are uploaded to
+                  third-party servers — privacy by default, with no per-minute
+                  cloud costs.
+                </p>
+              </div>
+            </section>
+          )}
+
           <section>
             <SectionHead
               title={mode === 'meetings' ? 'All notes' : 'Previous'}
@@ -252,10 +360,38 @@ export function Home({ mode }: HomeProps) {
             )}
           </section>
         </>
-      )}
+        )}
+      </div>
     </MeetingsShell>
   );
 }
+
+interface Step {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
+}
+
+const STEPS: Step[] = [
+  {
+    icon: Mic,
+    title: 'Record',
+    description:
+      'Capture meeting audio with one click, or start hands-free from anywhere with a global shortcut.',
+  },
+  {
+    icon: FileText,
+    title: 'Transcribe',
+    description:
+      'Whisper turns the audio into an accurate transcript on-device — no internet required.',
+  },
+  {
+    icon: Sparkles,
+    title: 'Summarize',
+    description:
+      'A local model distills the transcript into concise notes, action items, and key topics.',
+  },
+];
 
 interface SectionHeadProps {
   title: string;
