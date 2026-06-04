@@ -84,6 +84,27 @@ function StepCard({ step }: { step: Step }) {
     </div>
   );
 }
+function StepCard({ step }: { step: Step }) {
+  const Icon = step.icon;
+  return (
+    <div
+      className="flex items-center gap-4 rounded-md border border-border p-4"
+      data-setup-step={step.id}
+      data-setup-status={step.status}
+    >
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-muted text-foreground">
+        {step.status === 'done' ? <Check className="size-5" /> : step.status === 'failed' ? <X className="size-5" /> : <Icon className="size-5" />}
+      </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <div className="text-sm font-medium text-foreground">{step.title}</div>
+          <Badge status={step.status} />
+        </div>
+        <Muted className="mt-0.5">{step.detail ?? step.description}</Muted>
+      </div>
+    </div>
+  );
+}
 
 export function Setup() {
   const navigate = useNavigate();
@@ -112,6 +133,8 @@ export function Setup() {
     });
   }, []);
 
+  console.log('Rendering Setup component');
+
   const checkMic = useCheckMicPermission();
   const requestMic = useRequestMicPermission();
   const whisperStep = useSetupStep('whisper');
@@ -135,6 +158,8 @@ export function Setup() {
   // could be stale or empty, and we don't want to seed from it and then ignore
   // the canonical value when it arrives from disk.
   const seededRef = React.useRef(false);
+  const userNameReady = !userName.isPending && !userName.isPlaceholderData;
+
   React.useEffect(() => {
     if (seededRef.current) return;
     if (userName.isPending || userName.isPlaceholderData) return;
@@ -240,6 +265,35 @@ export function Setup() {
     }
   };
 
+  const steps: Step[] = [
+    {
+      id: 'microphone',
+      title: 'Microphone Access',
+      description: 'Required for recording meetings',
+      icon: Mic,
+      status: statuses.microphone,
+      detail: details.microphone,
+    },
+    {
+      id: 'whisper',
+      title: 'Transcription Engine',
+      description: 'Converts speech to text locally',
+      icon: MessageSquare,
+      status: statuses.whisper,
+      detail: details.whisper,
+    },
+    {
+      id: 'ollama',
+      title: 'Summarization Engine',
+      description:
+        summaryMode === 'cloud'
+          ? 'Cloud API — fast, no download'
+          : 'Local model (~2 GB) — private, runs on your Mac',
+      icon: summaryMode === 'cloud' ? Cloud : Zap,
+      status: statuses.ollama,
+      detail: details.ollama,
+    },
+  ];
   const steps: Step[] = [
     {
       id: 'microphone',

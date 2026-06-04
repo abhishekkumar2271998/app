@@ -1,5 +1,15 @@
 import * as React from 'react';
-import { PencilLine, RefreshCw, Search, Square, X } from 'lucide-react';
+import {
+  FileText,
+  Mic,
+  PencilLine,
+  RefreshCw,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  Square,
+  X,
+} from 'lucide-react';
 import { MeetingsShell } from '@/components/MeetingsShell';
 import { UpcomingCard } from '@/components/home/UpcomingCard';
 import { PreviousRow } from '@/components/home/PreviousRow';
@@ -76,7 +86,22 @@ export function Home({ mode }: HomeProps) {
       activeSummaryFile={null}
       contentAlign={emptyState && mode === 'home' ? 'center' : 'top'}
     >
-      {meetings.isLoading ? (
+      {/* Dashboard renders as a self-contained dark panel regardless of the
+          app theme. The `dark` class re-binds the design tokens (--page,
+          --fg-1, --surface-*, …) on this subtree, so descendants inherit the
+          dark palette without affecting the sidebar or the rest of the app. */}
+      <div
+        className="dark"
+        style={{
+          background: 'var(--page)',
+          color: 'var(--fg-1)',
+          borderRadius: 'var(--radius-xl)',
+          padding: '28px 32px',
+          minHeight: '100%',
+          boxShadow: 'var(--shadow-md)',
+        }}
+      >
+        {meetings.isLoading ? (
         <div className="flex min-h-[40vh] items-center justify-center text-[color:var(--fg-2)]">
           Loading meetings…
         </div>
@@ -180,11 +205,83 @@ export function Home({ mode }: HomeProps) {
 
           {mode === 'home' && (
             <section className="mb-10">
-              <SectionHead title="Clients" count={CLIENTS.length} />
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {CLIENTS.map((client) => (
-                  <ClientCard key={client.name} client={client} />
+              <SectionHead title="How it works" count={STEPS.length} />
+              <p
+                className="mb-5 max-w-[60ch] text-sm leading-[1.55]"
+                style={{ color: 'var(--fg-2)' }}
+              >
+                StenoAI captures meetings and turns them into clean,
+                searchable notes — entirely on your machine. Recording,
+                transcription, and summarization all run locally, so your
+                conversations never leave your device.
+              </p>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {STEPS.map((step, i) => (
+                  <div
+                    key={step.title}
+                    className="flex flex-col gap-2.5 rounded-[14px] p-4"
+                    style={{
+                      background: 'var(--surface-raised)',
+                      border: '1px solid var(--border-subtle)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span
+                        className="inline-flex size-7 items-center justify-center rounded-full"
+                        style={{
+                          background: 'var(--surface-active)',
+                          color: 'var(--fg-1)',
+                        }}
+                      >
+                        <step.icon className="size-[15px]" />
+                      </span>
+                      <span
+                        className="text-[11px] font-medium tabular-nums"
+                        style={{ color: 'var(--fg-muted)' }}
+                      >
+                        Step {i + 1}
+                      </span>
+                    </div>
+                    <div>
+                      <div
+                        className="text-sm font-medium"
+                        style={{ color: 'var(--fg-1)' }}
+                      >
+                        {step.title}
+                      </div>
+                      <p
+                        className="mt-1 text-[13px] leading-[1.5]"
+                        style={{ color: 'var(--fg-2)' }}
+                      >
+                        {step.description}
+                      </p>
+                    </div>
+                  </div>
                 ))}
+              </div>
+              <div
+                className="mt-4 flex items-start gap-2.5 rounded-[14px] p-4"
+                style={{
+                  background: 'var(--surface-raised)',
+                  border: '1px solid var(--border-subtle)',
+                }}
+              >
+                <ShieldCheck
+                  className="mt-0.5 size-4 shrink-0"
+                  style={{ color: 'var(--fg-2)' }}
+                />
+                <p
+                  className="max-w-[60ch] text-[13px] leading-[1.5]"
+                  style={{ color: 'var(--fg-2)' }}
+                >
+                  <span style={{ color: 'var(--fg-1)', fontWeight: 500 }}>
+                    Why local?
+                  </span>{' '}
+                  Meeting notes contain sensitive conversations. Keeping the
+                  full pipeline on-device means no transcripts are uploaded to
+                  third-party servers — privacy by default, with no per-minute
+                  cloud costs.
+                </p>
               </div>
             </section>
           )}
@@ -263,77 +360,38 @@ export function Home({ mode }: HomeProps) {
             )}
           </section>
         </>
-      )}
+        )}
+      </div>
     </MeetingsShell>
   );
 }
 
-interface Client {
-  name: string;
-  role: string;
-  /** Avatar URL. Falls back to initials if the image fails to load. */
-  photo: string;
+interface Step {
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  description: string;
 }
 
-// Placeholder client data — swap for a real source when one exists.
-const CLIENTS: Client[] = [
-  { name: 'Sarah Chen', role: 'Product, Northwind', photo: 'https://i.pravatar.cc/160?img=47' },
-  { name: 'Marcus Reid', role: 'Founder, Lumen Labs', photo: 'https://i.pravatar.cc/160?img=12' },
-  { name: 'Priya Nair', role: 'Design, Acme Corp', photo: 'https://i.pravatar.cc/160?img=32' },
-  { name: 'Diego Alvarez', role: 'Eng, Foxtrot', photo: 'https://i.pravatar.cc/160?img=68' },
+const STEPS: Step[] = [
+  {
+    icon: Mic,
+    title: 'Record',
+    description:
+      'Capture meeting audio with one click, or start hands-free from anywhere with a global shortcut.',
+  },
+  {
+    icon: FileText,
+    title: 'Transcribe',
+    description:
+      'Whisper turns the audio into an accurate transcript on-device — no internet required.',
+  },
+  {
+    icon: Sparkles,
+    title: 'Summarize',
+    description:
+      'A local model distills the transcript into concise notes, action items, and key topics.',
+  },
 ];
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('');
-}
-
-function ClientCard({ client }: { client: Client }) {
-  const [failed, setFailed] = React.useState(false);
-
-  return (
-    <div
-      className="flex flex-col items-center gap-3 rounded-[14px] p-4 text-center"
-      style={{
-        background: 'var(--surface-raised)',
-        border: '1px solid var(--border-subtle)',
-      }}
-    >
-      {failed ? (
-        <div
-          className="flex size-16 items-center justify-center rounded-full text-base font-medium"
-          style={{ background: 'var(--surface-active)', color: 'var(--fg-1)' }}
-          aria-hidden="true"
-        >
-          {initials(client.name)}
-        </div>
-      ) : (
-        <img
-          src={client.photo}
-          alt={client.name}
-          width={64}
-          height={64}
-          loading="lazy"
-          onError={() => setFailed(true)}
-          className="size-16 rounded-full object-cover"
-          style={{ border: '1px solid var(--border-subtle)' }}
-        />
-      )}
-      <div>
-        <div className="text-sm font-medium" style={{ color: 'var(--fg-1)' }}>
-          {client.name}
-        </div>
-        <div className="mt-0.5 text-[12.5px]" style={{ color: 'var(--fg-2)' }}>
-          {client.role}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 interface SectionHeadProps {
   title: string;

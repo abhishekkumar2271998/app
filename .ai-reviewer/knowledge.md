@@ -1,20 +1,21 @@
-# stenoai reviewer notes
+# abhishekkumar2271998/app reviewer notes
 
 ## Architecture
-The `stenoai` repository is an Electron-based application that provides an AI-powered intelligence layer for recording, transcribing, and summarizing conversations. The codebase is structured into two main folders: `app`, which contains the Electron desktop application and frontend (using React and Vite), and `src`, which hosts the Python backend responsible for audio processing and AI integrations.
+This codebase, named StenoAI, is organized primarily into an Electron application structured in a typical Model-View-Controller (MVC) pattern. The main components are a Python backend for handling audio recording and transcription, and a React-based frontend that utilizes Vite for building the user interface. The directory layout distinguishes between the core application (`src`) and the Electron renderer (`app`), making it easy to navigate and understand the roles of different components.
 
 ## Conventions
-- **File Naming**: File names use lowercase_with_underscores for Python files (e.g., `audio_recorder.py`, `transcriber.py`) and PascalCase for React components (e.g., `Home.tsx`, `Settings.tsx`).
-- **Python Code Style**: The Python backend follows PEP 8 guidelines, including the use of type hints and docstrings. The linter `ruff` is required for code quality checks.
-- **JavaScript/TypeScript Code Style**: The frontend adheres to JavaScript's standard conventions, including the use of semicolons and `const`/`let` for variable declarations. Consistent use of hooks (e.g., `useEffect`, `useLayoutEffect`) is observed for managing component lifecycles in React.
-- **Project Structure**: The main project directory contains two primary components: the `app` folder (for front-end and Electron-specific code) and the `src` folder (for the Python backend). The `package.json` in the `app` directory defines npm scripts for managing both frontend and package-related tasks.
+- **File Structure**: The `src` directory contains Python scripts with clear functionality (e.g., `audio_recorder.py`, `transcriber.py`), while the `app` directory contains the Electron-specific files (`main.js` for main process setup and `preload.js` for IPC communications) and a `renderer` folder for the frontend.
+- **Python Style**: Follow PEP 8 guidelines strictly, including the use of type hints and docstrings. Linting is enforced with `ruff`, as seen in the `CONTRIBUTING.md`.
+- **JavaScript Style**: JavaScript files use semicolons, and `const`/`let` should be preferred over `var`, aligning with best practices found in `package.json` scripts.
+- **React Components**: Components are organized in a functional style using hooks for state management and side effects, as demonstrated in `renderer/src/App.tsx`.
+- **Environment Configuration**: Use a `.env` file for environment-specific secrets, ensuring no sensitive data is hardcoded or exposed in the source code.
 
 ## Intentional non-standard choices
-- **Node.js and Python Integration**: The choice of Python for backend processing and JavaScript for the frontend may appear as a separation of concerns. However, this hybrid architecture aims to leverage the strengths of both ecosystems effectively.
-- **Global State Management with Custom Hooks**: A non-standard choice is the use of custom React hooks (like `useRecording`) for state management within the application, which provides a clear API to interact with shared functionalities.
+- The project uses a manual semantic versioning process where maintainers are solely responsible for version increments and releases. This is evident from the versioning guidelines in `CONTRIBUTING.md`, where contributors focus on code quality rather than versioning intricacies.
 
 ## Watch out for
-- **Error Handling**: Watch for inadequate error handling in asynchronous operations, especially when dealing with IPC (interprocess communication) between the renderer and main processes (`ipcRenderer.invoke` and `.send` methods in `preload.js`).
-- **Dependency Management**: Ensure that all dependencies are correctly listed in `package.json` and that the Python environment is set up properly with required packages in `requirements.txt`. Missing dependencies can lead to runtime errors.
-- **Sensitive Information**: Check for the presence of sensitive information in `.env` or code files and ensure that they are excluded from version control. The `.env` should not include sensitive API keys directly in code files.
-- **Environment-Specific Code**: Be cautious when checking code that uses environment variables (like `process.env.STENOAI_E2E`) and ensure that there is clear documentation on the setup for E2E testing in `README.md` and `CONTRIBUTING.md`.
+- **Ensure Type Safety**: In TypeScript files, such as `renderer/src/App.tsx`, watch for missing type annotations that could lead to runtime errors.
+- **Avoid Unused Imports**: The linter should catch unused imports, but it's good practice to verify that all imported modules or components are utilized correctly.
+- **Async Handling**: Ensure that asynchronous calls, especially in IPC communication and during setup (e.g., in `main.js`), are handled properly to prevent unhandled promise rejections.
+- **Accessibility and Focus Management**: Pay attention to accessibility practices such as focus management in user interface components to enhance user experience, especially in the frontend (React components).
+- **Error Handling**: Make sure that proper error handling mechanisms are in place across backend Python services as well as in the Electron IPC to gracefully manage any potential failures during recording or transcription processes.
