@@ -1,21 +1,21 @@
-# stenoai reviewer notes
+# abhishekkumar2271998/app reviewer notes
 
 ## Architecture
-This codebase is a macOS desktop application built using Electron, React, and a Python backend. It combines audio recording, transcription, and summarization features, serving as a private AI-powered stenographer for confidential conversations. The structure separates client-side and server-side concerns, with `src` containing the Python backend and `app/renderer` handling the React frontend.
+This codebase, named StenoAI, is organized primarily into an Electron application structured in a typical Model-View-Controller (MVC) pattern. The main components are a Python backend for handling audio recording and transcription, and a React-based frontend that utilizes Vite for building the user interface. The directory layout distinguishes between the core application (`src`) and the Electron renderer (`app`), making it easy to navigate and understand the roles of different components.
 
 ## Conventions
-- **File Structure:** The main application files are under `app/` inclusive of `main.js` for the Electron main process and the `renderer/` directory for React. Python code resides in `src/`, which contains `audio_recorder.py`, `transcriber.py`, and `summarizer.py`.
-- **Script Naming:** The `package.json` uses descriptive script names for commands like `start`, `build`, `dev:renderer`, and `lint:renderer`, enhancing clarity when executing tasks (found in `app/package.json`).
-- **JavaScript Style:** The team adheres to specific rules such as always using semicolons and preferring `const` and `let` over `var`, as stated in `CONTRIBUTING.md`.
-- **Types and React:** TypeScript is used in the frontend; all components are structured via functional React components and hooks, employing ESLint and Prettier for code quality (observed in `app/renderer/src/App.tsx`).
-- **Tailwind CSS:** The project utilizes Tailwind CSS for styling, seen in `tailwind.config.cjs`, with a focus on class-based styling and responsive design adjustments.
+- **File Structure**: The `src` directory contains Python scripts with clear functionality (e.g., `audio_recorder.py`, `transcriber.py`), while the `app` directory contains the Electron-specific files (`main.js` for main process setup and `preload.js` for IPC communications) and a `renderer` folder for the frontend.
+- **Python Style**: Follow PEP 8 guidelines strictly, including the use of type hints and docstrings. Linting is enforced with `ruff`, as seen in the `CONTRIBUTING.md`.
+- **JavaScript Style**: JavaScript files use semicolons, and `const`/`let` should be preferred over `var`, aligning with best practices found in `package.json` scripts.
+- **React Components**: Components are organized in a functional style using hooks for state management and side effects, as demonstrated in `renderer/src/App.tsx`.
+- **Environment Configuration**: Use a `.env` file for environment-specific secrets, ensuring no sensitive data is hardcoded or exposed in the source code.
 
 ## Intentional non-standard choices
-- **Environment Handling:** The project employs a simple manual environment loader in `main.js` instead of using external libraries like `dotenv`. This non-standard choice aims to minimize dependencies and streamline the environment variables loading process.
-- **Single Instance Application:** The use of `app.requestSingleInstanceLock()` in `main.js` allows the application to ensure only one instance runs at a time, minimizing potential conflicts with multiple windows.
+- The project uses a manual semantic versioning process where maintainers are solely responsible for version increments and releases. This is evident from the versioning guidelines in `CONTRIBUTING.md`, where contributors focus on code quality rather than versioning intricacies.
 
 ## Watch out for
-- **Import Paths:** Ensure all import paths in the renderer follow the configured aliases. Incorrect paths can lead to issues during building and running the application.
-- **State Management:** The application uses React hooks for managing state, but make sure to avoid unnecessary renders. Utilize dependencies properly in effects to prevent stale state issues, especially in asynchronous operations and `useEffect` (as seen in `App.tsx`).
-- **Type Checking:** Given the reliance on TypeScript, any missing type annotations in functions or props can lead to runtime issues. Always ensure types are explicitly defined, especially in dynamic functions like those in `ipc` communications.
-- **Error Handling:** Pay careful attention to error handling in asynchronous functions, especially in the `main.js` where backend communication occurs. Ensure that errors are logged and do not crash the application.
+- **Ensure Type Safety**: In TypeScript files, such as `renderer/src/App.tsx`, watch for missing type annotations that could lead to runtime errors.
+- **Avoid Unused Imports**: The linter should catch unused imports, but it's good practice to verify that all imported modules or components are utilized correctly.
+- **Async Handling**: Ensure that asynchronous calls, especially in IPC communication and during setup (e.g., in `main.js`), are handled properly to prevent unhandled promise rejections.
+- **Accessibility and Focus Management**: Pay attention to accessibility practices such as focus management in user interface components to enhance user experience, especially in the frontend (React components).
+- **Error Handling**: Make sure that proper error handling mechanisms are in place across backend Python services as well as in the Electron IPC to gracefully manage any potential failures during recording or transcription processes.
