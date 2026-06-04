@@ -178,6 +178,17 @@ export function Home({ mode }: HomeProps) {
             </section>
           )}
 
+          {mode === 'home' && (
+            <section className="mb-10">
+              <SectionHead title="Clients" count={CLIENTS.length} />
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                {CLIENTS.map((client) => (
+                  <ClientCard key={client.name} client={client} />
+                ))}
+              </div>
+            </section>
+          )}
+
           <section>
             <SectionHead
               title={mode === 'meetings' ? 'All notes' : 'Previous'}
@@ -254,6 +265,73 @@ export function Home({ mode }: HomeProps) {
         </>
       )}
     </MeetingsShell>
+  );
+}
+
+interface Client {
+  name: string;
+  role: string;
+  /** Avatar URL. Falls back to initials if the image fails to load. */
+  photo: string;
+}
+
+// Placeholder client data — swap for a real source when one exists.
+const CLIENTS: Client[] = [
+  { name: 'Sarah Chen', role: 'Product, Northwind', photo: 'https://i.pravatar.cc/160?img=47' },
+  { name: 'Marcus Reid', role: 'Founder, Lumen Labs', photo: 'https://i.pravatar.cc/160?img=12' },
+  { name: 'Priya Nair', role: 'Design, Acme Corp', photo: 'https://i.pravatar.cc/160?img=32' },
+  { name: 'Diego Alvarez', role: 'Eng, Foxtrot', photo: 'https://i.pravatar.cc/160?img=68' },
+];
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('');
+}
+
+function ClientCard({ client }: { client: Client }) {
+  const [failed, setFailed] = React.useState(false);
+
+  return (
+    <div
+      className="flex flex-col items-center gap-3 rounded-[14px] p-4 text-center"
+      style={{
+        background: 'var(--surface-raised)',
+        border: '1px solid var(--border-subtle)',
+      }}
+    >
+      {failed ? (
+        <div
+          className="flex size-16 items-center justify-center rounded-full text-base font-medium"
+          style={{ background: 'var(--surface-active)', color: 'var(--fg-1)' }}
+          aria-hidden="true"
+        >
+          {initials(client.name)}
+        </div>
+      ) : (
+        <img
+          src={client.photo}
+          alt={client.name}
+          width={64}
+          height={64}
+          loading="lazy"
+          onError={() => setFailed(true)}
+          className="size-16 rounded-full object-cover"
+          style={{ border: '1px solid var(--border-subtle)' }}
+        />
+      )}
+      <div>
+        <div className="text-sm font-medium" style={{ color: 'var(--fg-1)' }}>
+          {client.name}
+        </div>
+        <div className="mt-0.5 text-[12.5px]" style={{ color: 'var(--fg-2)' }}>
+          {client.role}
+        </div>
+      </div>
+    </div>
   );
 }
 
